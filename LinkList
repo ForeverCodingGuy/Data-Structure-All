@@ -1,0 +1,135 @@
+#include<iostream>
+#include<cassert>
+using namespace std;
+
+template<class T>
+class Node
+{
+	T e;
+	Node* next;
+	Node():next(nullptr){}
+	Node(T elem):e(elem){}
+	Node(T elem,Node * ne):e(elem),next(ne){}
+};
+
+template<class T>
+class LinkList
+{
+private:
+	Node* head;
+	int size;
+public:
+	LinkList()
+	{
+		head = new Node<T>();
+		size = 0;
+	}
+	int get_size()
+	{
+		return size;
+	}
+	bool isempty()
+	{
+		return size == 0;
+	}
+	void add(int idx, T e)
+	{
+		assert(idx >= 0 && idx <= size);
+		Node<T>* pre = head;
+		for (int i = 0; i < idx; i++)
+		{
+			pre = pre->next;
+		}
+		pre->next = new Node<T>(e, pre->next);
+		++size;
+	}
+	void addFirst(T e)
+	{
+		add(0, e);
+	}
+	void addLast(T e)
+	{
+		add(size, e);
+	}
+	T get(int idx)
+	{
+		assert(idx >= 1 && idx <= size);
+		Node<T>* cur = head;
+		for (int i = 0; i < idx; i++)
+		{
+			cur = cur->next;
+		}
+		return cur->e;
+	}
+	T getFirst()
+	{
+		return get(1);
+	}
+	T getLast()
+	{
+		return get(size);
+	}
+	void set(int idx, T e)
+	{
+		assert(idx >= 1 && idx <= size);
+		Node<T>* cur = head;
+		for (int i = 0; i < idx; i++)
+		{
+			cur = cur->next;
+		}
+		cur->e = e;
+	}
+	void setFirst(T e)
+	{
+		set(1, e);
+	}
+	void setLast(T e)
+	{
+		set(size, e);
+	}
+	T remove(int idx)
+	{
+		assert(idx >= 1 && idx <= size);
+		Node<T>* cur = head;
+		for (int i = 0; i < idx - 1; i++)
+		{
+			cur = cur->next;
+		}
+		Noed<T>* tem = cur->next;
+		cur->next = cur->next->next;
+		--size;
+		return tem->e;
+	}
+	T removeFirst()
+	{
+		return remove(1);
+	}
+	T removeLast()
+	{
+		return remove(size); 
+	}
+	void removeElem(T e)
+	{
+		Node<T>* cur = head;
+		while (cur->next)
+		{
+			if (cur->next->e == e) break;
+			cur = cur->next;
+		}
+		if (cur->next)
+		{
+			cur->next = cur->next->next;
+			--size;
+		}
+	}
+	bool contains(T e)
+	{
+		Node<T>* cur = head;
+		for (int i = 0; i < size; i++)
+		{
+			cur = cur->next;
+			if (cur->e == e) return true;
+		}
+		return false;
+	}
+};
