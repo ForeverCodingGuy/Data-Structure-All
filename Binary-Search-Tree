@@ -1,0 +1,328 @@
+#include<iostream>
+#include<stack>
+#include<queue>
+#include<cassert>
+using namespace std;
+
+template<class T>
+class Node
+{
+public:
+	T e;
+	Node<T>* left, right; //左右儿子
+
+	Node(T e)
+	{
+		this->e = e;
+		left = nullptr;
+		right = nullptr;
+	}
+};
+
+template<class T>
+class BST
+{
+public:
+	BST()//构造函数
+	{
+		root = nullptr;
+		size = 0;
+	}
+
+	int get_size()//大小
+	{
+		return size;
+	}
+
+	bool is_empty()//判断是否为空
+	{
+		return size == 0;
+	}
+
+	Node<T>* add(Node<T> node, T e)//某个结点下添加元素
+	{
+		if (node == nullptr)
+		{
+			++size;
+			return new Node<T>(e);
+		}
+
+		if (node->e > e)
+		{
+			node->left = new Node<T>(e);
+		}
+		else node->right = new Node<T>(e);
+
+		return node;
+	}
+
+	void add(T e) //向整个树中添加某个元素
+	{
+		if (root == nullptr)
+		{
+			++size;
+			root = new Node<T>(e);
+		}
+		add(root, e);
+	}
+
+	bool contains(T e)//整个树中是否包含某个元素
+	{
+		return contains(root, e);
+	}
+
+	void preOrder()//整棵树前序遍历
+	{
+		preOrder(root);
+		cout << endl;
+	}
+
+	void preOrderNR()//前序遍历迭代版
+	{
+		if (root == nullptr) return;
+
+		stack<Node<T>*> stk;
+		stk.push(root);
+
+		while (!stk.empty())
+		{
+			Node<T>* cur = stk.top();
+			stk.pop();
+			cout << cur->e << " ";
+			if (cur->right) stk.push(cur->right);
+			if (cur->left) stk.push(cur->left);
+		}
+		cout << endl;
+	}
+
+	void inOrder()//整棵树中序遍历
+	{
+		inOrder(root);
+		cout << endl;
+	}
+
+	void inOrderNR()//中序遍历迭代版
+	{
+		stack<Node<T>*> stk;
+		Node<T>* cur = root;
+
+		while (cur || !stk.empty())
+		{
+			while (cur)
+			{
+				stk.push(cur);
+				cur = cur->left;
+			}
+
+			if (!stk.empty())
+			{
+				cur = stk.top();
+				stk.pop();
+				cout << cur->e << " ";
+				cur = cur->right;
+			}
+		}
+
+		cout << endl;
+	}
+
+	void postOrder()//整棵树后序遍历
+	{
+		postOrder(root);
+		cout << endl;
+	}
+
+	void postOrderNR()//后序遍历迭代版
+	{
+		Node<T>* cur = root;
+		Node<T>* tem;
+		stack<Node<T>*> stk;
+
+		while (cur || !stk.empty())
+		{
+			while (cur)
+			{
+				stk.push(cur);
+				cur = cur->left;
+			}
+
+			if (!stk.empty())
+			{
+				cur = stk.top();
+				if (cur->right == nullptr || cur->right == tem)
+				{
+					cout << cur->e << " ";
+					stk.pop();
+					tem = cur;
+					cur = nullptr;
+				}
+				else cur = cur->right;
+			}
+		}
+		cout << endl;
+	}
+
+
+	void leverOrder()//层序遍历
+	{
+		if (root == nullptr) return;
+		queue<Node<T>* > que;
+		que.push(root);
+		while (!que.empty())
+		{
+			Node<T>* cur = que.top();
+			que.pop();
+			cout << cur->e << " ";
+			if (cur->left) que.push(cur->left);
+			if (cur->right) que.push(cur->right);
+		}
+		cout << endl;
+	}
+
+	T minmun()//返回树中最小值
+	{
+		assert(size > 0);
+		return min(root)->e;
+	}
+
+	T maxmun()//返回树中最大值
+	{
+		assert(size > 0);
+		return max(root)->e;
+	}
+
+	T removeMin()//删除最小结点并返回最小值
+	{
+		T ret = minmun();
+		root = removeMin(root);
+		return ret;
+	}
+
+	T removeMax()//删除最大结点并返回最大值
+	{
+		T ret = maxmun();
+		root = removeMax(root);
+		return ret;
+	}
+
+	void remove(T e)//删除结点值为e的结点
+	{
+		root = remove(root, e);
+	}
+private:
+	Node<T>* root;//根结点
+	int size;//树的大小
+
+	bool contains(Node<T>* node, T e)//实现public中contains功能
+	{
+		if (node == nullptr) return false;
+		else if (node->e == e) return true;
+		else if (node->e > e) return contains(node->left, e);
+		else return contains(node->right, e);
+	}
+
+	void preOrder(Node<T>* node)//前序遍历递归版
+	{
+		if (node == nullptr) return;
+		cout << node->e << " ";
+		preOrder(node->left);
+		preOrder(node->right);
+	}
+
+	void inOrder(Node<T>* node)//中序遍历递归版
+	{
+		if (node == nullptr) return;
+		inOrder(node->left);
+		cout << node->e << " ";
+		inOrder(node->right);
+	}
+
+	void postOrder(Node<T>* cur)//后序遍历递归版
+	{
+		if (root == nullptr) return;
+		postOrder(cur->left);
+		postOrder(cur->right);
+		cout << cur->e << " ";
+	}
+
+
+	Node<T>* min(Node<T>* cur)//返回最小值结点
+	{
+		if (cur->left == nullptr) return cur;
+		return min(cur->left);
+	}
+
+	Node<T>* max(Node<T>* cur)//返回最大值结点
+	{
+		if (cur->right == nullptr) return cur;
+		return max(cur->right);
+	}
+
+	Node<T>* removeMin(Node<T>* node)//删除以node为根结点子树的最小结点,并返回删除后剩下子树根节点
+	{
+		if (node->left == nullptr)
+		{
+			Node<T>* right_node = node->right;
+			delete node;
+			--size;
+			return right_node;
+		}
+		node->left = removeMin(root->left);
+		return node;
+	}
+
+	Node<T>* removeMax(Node<T>* node)//删除以node为根结点子树的最大结点，并返回删除后剩下子树根结点
+	{
+		if (node->right == nullptr)
+		{
+			Node<T>* left_node = node->left;
+			delete node;
+			--size;
+			return left_node;
+		}
+		node->right = removeMax(node->right);
+		return node;
+	}
+
+	Node<T>* remove(Node<T>* node, T e)//删除以node为根节点子树中e值结点，并返回删除后剩余子树根节点
+	{
+		if (node == nullptr) return nullptr;
+		if (e < node->e)
+		{
+			node->left = remove(node->left, e);
+			return node;
+		}
+		else if (e > node->e)
+		{
+			node->right = remove(node->right, e);
+			return node;
+		}
+		else
+		{
+			if (node->left == nullptr)
+			{
+				Node<T>* right_node = node->right;
+				delete node;
+				--size;
+				return right_node;
+			}
+			else if (node->right == nullptr)
+			{
+				Node<T>* left_node = node->left;
+				delete node;
+				--size;
+				return left_node;
+			}
+			else
+			{
+				Node<T>* right_min = new Node<T>(min(node->right)->e);
+				right_min->right = removeMin(node->right);
+				right_min->left = node->left;
+				node->left = node->right = nullptr;
+				delete node;
+				--size;
+				return right_min;
+			}
+		}
+	}
+};
